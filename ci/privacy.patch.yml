@@ -1,0 +1,35 @@
+# Applied as the final CLI overlay, after all profile and home configuration.
+# ACP's base bundle otherwise sends complete session events with DeepSeek requests.
+- id: session-log-deepseek
+  disabled: true
+- id: plugin-package-inventory-deepseek
+  disabled: true
+- id: session-telemetry-otel
+  disabled: true
+- id: hmr
+  disabled: true
+# Model-triggered web tools make separate requests outside the model endpoint.
+- id: tool-web
+  disabled: true
+- id: web-search-deepseek
+  disabled: true
+- id: web-deepseek-api
+  disabled: true
+- id: web-fetch-http
+  disabled: true
+# This integration admits full access only; session defaults are immutable for
+# each native session. The engine must never resume across authority lineages.
+- id: sandbox-policy
+  config:
+    mode: danger-full-access
+    workspaceRoot: !!js process.cwd()
+- id: approval
+  config:
+    policy: never
+- id: permission
+  config:
+    presets:
+      danger-full-access:
+        sandbox: danger-full-access
+        approval: never
+    defaultPreset: danger-full-access
