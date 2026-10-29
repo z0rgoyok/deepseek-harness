@@ -240,8 +240,9 @@ export function loadLayeredEnv(
   warn: (line: string) => void = line => void process.stderr.write(line),
 ): LaunchEnvironmentSnapshot {
   const home = resolveDshHome()
+  const inheritedOnly = process.env.DSH_ENV_INHERITED_ONLY === '1'
   const inherited = { ...process.env } as Record<string, string>
-  if (inherited.DSH_ENV_INHERITED_ONLY === '1') {
+  if (inheritedOnly) {
     return createLaunchEnvironmentSnapshot([{ source: 'process', values: inherited }])
   }
   // Parse both layers first: a rejection must not leave one file applied.
