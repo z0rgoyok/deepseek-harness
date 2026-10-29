@@ -30,10 +30,12 @@ export async function runCli(options: RunCliOptions = {}): Promise<void> {
 
   switch (invocation.mode) {
     case 'profile': {
-      const { runProfile } = await import('./profile-boot.ts')
       try {
+        const environment = loadLayeredEnv('dsh')
+        if (process.env.DSH_HIDE_DEEPSEEK_API_KEY === '1') delete process.env.DEEPSEEK_API_KEY
+        const { runProfile } = await import('./profile-boot.ts')
         await runProfile({
-          environment: loadLayeredEnv('dsh'),
+          environment,
           profile: invocation.profile,
           fromDefaultProfile: invocation.fromDefaultProfile,
           patchFiles: invocation.patches,

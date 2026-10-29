@@ -231,6 +231,8 @@ function readEnvLayer(
  * @param cwd - the invoking directory whose `.env` is the project layer.
  * @param warn - sink for the one-line misconfiguration diagnostics.
  * @returns this run's frozen environment snapshot.
+ * The inherited `DSH_ENV_INHERITED_ONLY=1` selects only the process layer and
+ * prevents the launcher from reading either `.env` file.
  * @throws when either file declares a bootstrap-only variable, except {@link HOME_LAYER_PROXY_NAMES} in the Harness-home file.
  */
 export function loadLayeredEnv(
@@ -239,6 +241,9 @@ export function loadLayeredEnv(
 ): LaunchEnvironmentSnapshot {
   const home = resolveDshHome()
   const inherited = { ...process.env } as Record<string, string>
+  if (inherited.DSH_ENV_INHERITED_ONLY === '1') {
+    return createLaunchEnvironmentSnapshot([{ source: 'process', values: inherited }])
+  }
   // Parse both layers first: a rejection must not leave one file applied.
   const project = readEnvLayer(binName, cwd, warn, home)
   const user = home === resolve(cwd) ? undefined : readEnvLayer(binName, home, warn, home)

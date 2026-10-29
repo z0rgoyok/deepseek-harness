@@ -140,6 +140,8 @@ Web、headless 与 SDK 继承 base bundle 的原生工具执行；使用 [PTC ov
 
 反馈记录在会话日志中，不会启动模型工作。[DeepSeek 会话日志贡献器](../../../packages/session/session-log-deepseek/README.zh.md)默认随后续 DeepSeek 请求发送尚未确认接收的完整日志后缀，包括经已配置网关发送的请求；可在 Web 的**设置 → 通用 → 在使用官方模型 API 时上传 Session Log**中关闭上传，或将其 `enabled` 配置设为 `false`。[OTel 会话上传](../../../packages/session/session-telemetry-otel/README.zh.md)适用于所有用户和提供方，包括 `deepseek-official`，无需请求头。基础配置默认使用 `FEEDBACK_ONLY`：新的自身文本反馈、消息评分、编辑与撤回会释放截至该事件的完整规范日志前缀，包含存储的上下文；后续记录等待下一次显式反馈。继承的父级反馈不构成 fork 的授权。请求、恢复、挂载和 HMR 不触发捕获。SDK 批处理可完成已授权上传，无需进一步交互或模型工作。`DSH_TELEMETRY_MODE=DISABLED` 禁止 OTel 投递；`FULL` 被拒绝，任何非空的 `DSH_TELEMETRY_DISABLED` 都会禁用其配置行。`DSH_TELEMETRY_OTLP_URL` 选择采集端。交接尽力而为，不代表采集端接受；不提供持久化 outbox 或重试保证。这些 OTel 设置不会开启或关闭 DeepSeek 贡献。两条路径都不改变模型输入，但导出可能包含消息文本、工具参数和结果，以及工作区路径。
 
+继承的 `DSH_HIDE_DEEPSEEK_API_KEY=1` 会在捕获启动快照后从进程环境中移除 `DEEPSEEK_API_KEY`。凭据服务仍可从快照解析该值，子进程不会自动继承这个变量。同一操作系统用户下的 agent 仍可访问凭据文件或进程内存。
+
 通过 `dsh plugin --profile <name> add <package-or-git-spec>` 安装外部插件组合包。安装的包拥有其依赖，并贡献其声明的 `cordis.patch.yml` 层。CLI 还随附 `@deepseek-ai/dsh-mcp-client` 作为供 patch 层使用的依赖，但默认不启用 MCP 服务器，因为每条服务器命令都是 agent 沙箱之外的受信任可执行代码。
 
 <a id="source-execution"></a>
